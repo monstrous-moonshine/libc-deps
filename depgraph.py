@@ -162,6 +162,24 @@ def bfs(graph: Graph, start: str, out_name: str) -> None:
         dot.write('}\n')
 
 
+def _dfs(graph: Graph, cur_node: str, visited: set[str], dot: typing.TextIO) -> None:
+    suffix = '.o' if cur_node.endswith('.o') else '.lo'
+    p = cur_node.removesuffix(suffix)
+    visited.add(cur_node)
+    for node in graph[cur_node]:
+        if node not in visited:
+            q = node.removesuffix(suffix)
+            dot.write(f'  "{p}" -> "{q}"\n')
+            _dfs(graph, node, visited, dot)
+
+def dfs(graph: Graph, start: str, out_name: str) -> None:
+    visited: set[str] = set()
+    with open(out_name, 'w') as dot:
+        dot.write('digraph {\n  graph[splines=ortho]\n')
+        _dfs(graph, start, visited, dot)
+        dot.write('}\n')
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("archive_dir", help="The directory in which the archive has been extracted")
@@ -171,7 +189,7 @@ def main():
     out_name = args.output_name
     gsyms, usyms, wsyms = read_syms_archive(archive_dir)
     graph = make_graph(archive_dir, gsyms, usyms, wsyms)
-    bfs(graph, gsyms['__libc_start_main'], out_name)
+    dfs(graph, gsyms['__libc_start_main'], out_name)
 
 
 if __name__ == '__main__':
