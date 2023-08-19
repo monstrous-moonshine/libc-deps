@@ -164,8 +164,8 @@ def bfs(graph: Graph, start: str, out_name: str) -> None:
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("archive_dir")
-    parser.add_argument("output_name")
+    parser.add_argument("archive_dir", help="The directory in which the archive has been extracted")
+    parser.add_argument("output_name", help="The name of the graphviz dot file to be created")
     args = parser.parse_args()
     archive_dir = args.archive_dir
     out_name = args.output_name
