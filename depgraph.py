@@ -1,3 +1,4 @@
+import argparse
 import io
 import os
 import sys
@@ -154,21 +155,23 @@ def _bfs(graph: Graph, cur_node: str, dot: typing.TextIO) -> None:
                 nodeq.append(node)
 
 
-def bfs(graph: Graph, start: str) -> None:
-    with open('deps.dot', 'w') as dot:
+def bfs(graph: Graph, start: str, out_name: str) -> None:
+    with open(out_name, 'w') as dot:
         dot.write('digraph {\n  graph[splines=ortho]\n')
         _bfs(graph, start, dot)
         dot.write('}\n')
 
 
 def main():
-    if len(sys.argv) != 2:
-        print(f'Usage: {sys.argv[0]} archive_dir', file=sys.stderr)
-        sys.exit(1)
-    archive_dir = sys.argv[1]
+    parser = argparse.ArgumentParser()
+    parser.add_argument("archive_dir")
+    parser.add_argument("output_name")
+    args = parser.parse_args()
+    archive_dir = args.archive_dir
+    out_name = args.output_name
     gsyms, usyms, wsyms = read_syms_archive(archive_dir)
     graph = make_graph(archive_dir, gsyms, usyms, wsyms)
-    bfs(graph, gsyms['__libc_start_main'])
+    bfs(graph, gsyms['__libc_start_main'], out_name)
 
 
 if __name__ == '__main__':
