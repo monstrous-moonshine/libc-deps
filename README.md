@@ -9,3 +9,11 @@ So, since we're pulling in `libc-start.o` from `libc.a`, we have to also pull in
 Of course, you can also supply your own `_start` function. But as soon as you call any libc function at all, you are likely to pull in a large portion of it since it's highly connected. This program can also be used to explore this dependency graph for other starting points like `printf` or `malloc`.
 
 And finally, this situation is specific to glibc. For other libc implementations, it'll be different. For musl, the dependency from `libc-start.o` (actually it's called `libc-start.lo`) is extremely simple, in line with its emphasis on simplicity.
+
+## Trying it out
+Extract `libc.a` in the project directory, then run the program.
+```console
+$ mkdir libc && ar x --output libc /usr/lib/libc.a
+$ python depgraph.py libc libc-dep.dot
+```
+You can now render the graph with graphviz and view it.
